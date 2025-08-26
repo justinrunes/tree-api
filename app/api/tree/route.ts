@@ -2,25 +2,15 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-type NodeRow = {
-  id: string;
-  label: string;
-  parent_id: string | null;
-};
-
-type TreeNode = {
-  id: string;
-  label: string;
-  children: TreeNode[];
-};
+// No longer need NodeRow or TreeNode types here, as the DB returns the final structure.
 
 function mapDbError(code?: string): number {
   switch (code) {
-    case '23505':
+    case '23505': // unique_violation
       return 409;
-    case '23503':
-    case '23502':
-    case 'PGRST116':
+    case '23503': // foreign_key_violation
+    case '23502': // not_null_violation
+    case 'PGRST116': // invalid_range
       return 422;
     default:
       return 500;
@@ -49,55 +39,19 @@ async function getClient() {
   });
 }
 
-function buildTree(nodes: NodeRow[]): TreeNode[] {
-  // A map for quick lookups of nodes by their ID.
-  const nodeMap = new Map<string, TreeNode>();
-
-  // An array to store the root nodes (those without a parent).
-  const roots: TreeNode[] = [];
-
-  // First pass: Create a TreeNode for each row and store it in the map.
-  // This ensures every node exists in our map before we start linking them.
-  for (const row of nodes) {
-    nodeMap.set(row.id, {
-      id: row.id,
-      label: row.label,
-      children: [], // Initialize children as an empty array.
-    });
-  }
-
-  // Second pass: Link children to their parents.
-  // We iterate through the original nodes again to access parent_id.
-  for (const row of nodes) {
-    const node = nodeMap.get(row.id);
-
-    // This should always find a node, but it's good practice to check.
-    if (!node) continue;
-
-    if (row.parent_id) {
-      // This is a child node. Find its parent in the map.
-      const parent = nodeMap.get(row.parent_id);
-      if (parent) {
-        // Add the current node to its parent's children array.
-        parent.children.push(node);
-      }
-    } else {
-      // This is a root node (it has no parent).
-      roots.push(node);
-    }
-  }
-
-  return roots;
-}
+// The buildTree function is no longer needed and can be deleted.
 
 export async function GET() {
   try {
     const supabase = await getClient();
-    const { data, error } = await supabase.from('tree_nodes').select('*');
+    // Call the powerful database function to get the entire tree as JSON.
+    const { data, error } = await supabase.rpc('get_full_tree');
+
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
-    return NextResponse.json(buildTree((data ?? []) as NodeRow[]));
+    // The data is already in the correct hierarchical format.
+    return NextResponse.json(data);
   } catch (e) {
     if (e instanceof Error) {
       return NextResponse.json({ error: e.message }, { status: 500 });
@@ -119,25 +73,13 @@ export async function POST(req: Request) {
 
     const supabase = await getClient();
 
-    if (parentId !== null) {
-      const { data: parent, error: parentError } = await supabase
-        .from('tree_nodes')
-        .select('id')
-        .eq('id', parentId)
-        .single();
-      if (parentError || !parent) {
-        return NextResponse.json(
-          { error: 'Invalid parentId' },
-          { status: 422 },
-        );
-      }
-    }
-
+    // The manual check for parentId is removed. The database constraint handles it.
     const { data, error } = await supabase
       .from('tree_nodes')
       .insert({ label, parent_id: parentId })
       .select()
       .single();
+
     if (error) {
       return NextResponse.json(
         { error: error.message },
@@ -158,6 +100,8 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    // This function's code doesn't change, but thanks to `ON DELETE CASCADE`,
+    // its behavior is now much more powerful and correct.
     const { id } = (await req.json()) as { id: string };
     const supabase = await getClient();
     const { data, error } = await supabase
@@ -166,7 +110,12 @@ export async function DELETE(req: Request) {
       .eq('id', id)
       .select()
       .single();
+
     if (error) {
+      // PGRST116 can happen if the ID doesn't exist
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Node not found' }, { status: 404 });
+      }
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     return NextResponse.json(data);
