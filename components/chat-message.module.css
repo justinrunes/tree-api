@@ -33,3 +33,25 @@
 .messageContent li {
   margin-bottom: 0.5rem;
 }
+
+.messageContent a {
+  color: white;
+  cursor: pointer;
+  display: inline;
+  -webkit-text-decoration-color: white;
+  text-decoration-color: white;
+  text-decoration-line: underline;
+  -webkit-text-decoration-skip-ink: auto;
+  text-decoration-skip-ink: auto;
+  text-decoration-style: dotted;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  text-underline-position: from-font;
+  vertical-align: baseline;
+}
+
+.messageContent a:hover {
+  color: #339cff;
+  -webkit-text-decoration-color: #339cff;
+  text-decoration-color: #339cff;
+}

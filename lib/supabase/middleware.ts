@@ -47,11 +47,18 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/tree-nodes') &&
     !request.nextUrl.pathname.startsWith('/api/tree') &&
     !request.nextUrl.pathname.startsWith('/chat') &&
-    !request.nextUrl.pathname.startsWith('/chat-private')
+    !request.nextUrl.pathname.startsWith('/chat-private') &&
+    request.nextUrl.pathname !== '/'
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
     url.pathname = '/auth/login';
+    return NextResponse.redirect(url);
+  }
+
+  if (request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/chat';
     return NextResponse.redirect(url);
   }
 
