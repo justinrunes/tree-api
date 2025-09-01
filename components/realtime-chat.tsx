@@ -371,7 +371,7 @@ export const RealtimeChat = ({
           // `Share an intro kit for your team`,
         ],
         webhookUrl:
-          'https://justin.atlasagent.ai/webhook/c19652de-1a8e-4771-9148-4e8903001956',
+          'https://n8n.justinrunes.com/webhook/c19652de-1a8e-4771-9148-4e8903001956',
       }
     : {
         suggestions: [
@@ -381,7 +381,7 @@ export const RealtimeChat = ({
           `Get booking link`,
         ],
         webhookUrl:
-          'https://justin.atlasagent.ai/webhook/5d983fb1-81cc-468a-97b1-bd143b1f5567',
+          'https://n8n.justinrunes.com/webhook/5d983fb1-81cc-468a-97b1-bd143b1f5567',
       };
 
   useEffect(() => {
