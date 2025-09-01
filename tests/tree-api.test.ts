@@ -2,7 +2,7 @@
 
 // Set up required environment variables for the test environment.
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.com';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'anon-key';
+process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'anon-key';
 
 // --- Mock Data ---
 // The mock database now uses strings for IDs to match the updated route.
