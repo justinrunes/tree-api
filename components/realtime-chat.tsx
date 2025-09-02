@@ -375,9 +375,9 @@ export const RealtimeChat = ({
       }
     : {
         suggestions: [
-          `View email, phone, booking link and save contact`,
+          `View all contact info`,
           `Connect on LinkedIn`,
-          `Give me a bio summary of Justin`,
+          `Give me a bio summary of Justin Runes`,
           `Get booking link`,
         ],
         webhookUrl:
