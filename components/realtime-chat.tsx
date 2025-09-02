@@ -375,7 +375,7 @@ export const RealtimeChat = ({
       }
     : {
         suggestions: [
-          `View Justin's contact info`,
+          `View email, phone, booking link and save contact`,
           `Connect on LinkedIn`,
           `Give me a bio summary of Justin`,
           `Get booking link`,
