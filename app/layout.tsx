@@ -5,7 +5,7 @@ import './globals.css';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000';
+  : 'http://localhost:3900';
 
 export const viewport: Viewport = {
   width: 'device-width',

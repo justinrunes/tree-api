@@ -6,9 +6,9 @@ services:
     volumes:
       - .:/usr/src/app
     environment:
-      - PORT=3000
+      - PORT=3900
       - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
       - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
     command: sh -c "npm install && npm run build && npm run start"
     ports:
-      - '3000:3000'
+      - '3900:3900'
